@@ -1,9 +1,18 @@
 import express, { json } from "express"
-import mysql from"mysql2"
+import mysql from "mysql2"
+import cors from "cors"
 
 // app 객체 생성
 const app = express();
 const PORT = 8000;
+
+app.use(json());
+// cors (Cross Origin Resource Sharing)
+// 브라우저가 보안상의 이유로 하는 api 요청 차단을 방지
+app.use(cors({
+    origin: "http://localhost:5173",
+}))
+
 // db 연결 설정
 const db = mysql.createConnection({
     host: "localhost",
@@ -11,8 +20,6 @@ const db = mysql.createConnection({
     password: "1234",
     database: "jsdb"
 });
-
-app.use(json());
 
 // DB 연결
 db.connect((err) => {
@@ -67,7 +74,7 @@ app.get("/api/products/:id", (req, res) => {
             res.send("상품 조회 중 오류 발생");
             return;
         }
-        res.json(result);
+        res.json(result[0]);
     })
 })
 
