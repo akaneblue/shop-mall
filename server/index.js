@@ -51,9 +51,9 @@ app.get("/api/products", (req, res) => {
 
 // 상품 등록
 app.post("/api/products", (req,res) => {
-    const {productName, price} = req.body;
-    const sql = "insert into product(product_name, price) values(?,?)";
-    db.query(sql, [productName, price], (err, result) => {
+    const {productName, price, description} = req.body;
+    const sql = "insert into product(product_name, price, description) values(?,?,?)";
+    db.query(sql, [productName, price, description], (err) => {
         if(err){
             console.log("상품 등록 오류", err);
             res.send("상품 등록 중 오류 발생");
@@ -81,10 +81,10 @@ app.get("/api/products/:id", (req, res) => {
 // 상품 수정
 app.put("/api/products/:id", (req, res) => {
     const p_id = req.params.id;
-    const {productName, price} = req.body;
-    const sql = "update product set product_name = ? , price = ? where id = ?;"
+    const {productName, price, description} = req.body;
+    const sql = "update product set product_name = ? , price = ?, description = ? where id = ?;"
 
-    db.query(sql,[productName,price,p_id], (err, result) => {
+    db.query(sql,[productName,price,description,p_id], (err) => {
         if(err){
             console.log("상품 수정 오류", err);
             res.send("상품 수정 중 오류 발생");
@@ -98,13 +98,56 @@ app.put("/api/products/:id", (req, res) => {
 app.delete("/api/products/:id", (req,res) => {
     const p_id = req.params.id;
     const sql = "delete from product where id = ?"
-    db.query(sql,[p_id], (err, result) => {
+    db.query(sql,[p_id], (err) => {
         if(err){
             console.log("상품 수정 오류", err);
             res.send("상품 수정 중 오류 발생");
             return;
         }
         res.send("상품이 성공적으로 삭제되었습니다.")
+    })
+})
+
+// 회원 목록
+app.get("/api/users", (req, res) => {
+    const sql = "select * from users";
+    db.query(sql,(err, results) => {
+        if(err){
+            console.log("회원 조회 오류", err);
+            res.send("회원 조회 중 오류 발생")
+            return;
+        }
+        res.json(results);
+    })
+})
+
+// 회원 단건 조회
+app.get("/api/users/:username", (req, res) => {
+    const sql = "select * from users where username = ?"
+    const username = req.params.username;
+    db.query(sql, username, (err, results) => {
+        if(err){
+            console.log("회원 상세 조회 오류", err);
+            res.send("회원 상세 조회 중 오류 발생");
+            return;
+        }
+        res.json(results)
+    })
+})
+
+// 회원 가입
+app.post("/api/users", (req, res) => {
+    console.log("Content-Type:", req.headers["content-type"]);
+    console.log("Body:", req.body);
+    const sql = "insert into users (username, password, email) values (?, ?, ?)"
+    const {username, password, email} = req.body;
+    db.query(sql, [username, password, email],(err) => {
+        if(err){
+            console.log("회원 가입 오류", err);
+            res.send("회원 가입 중 오류 발생");
+            return;
+        }
+        res.send("회원이 성공적으로 가입되었습니다.");
     })
 })
 
