@@ -4,8 +4,10 @@ const Header = ({isLoggedIn, username, userRole, onLogout}) => {
     const navigate = useNavigate();
 
     const handleClick = (e) => {
-        e.preventDefault();
+        if(userRole !== "admin"){
+            e.preventDefault();
         alert("상품 등록은 관리자만 가능합니다.");
+        }
     }
     return(
         <header className='header'>
